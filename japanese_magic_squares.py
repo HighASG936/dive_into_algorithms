@@ -2,7 +2,7 @@ import math
 
 #luoshu = [[4,9,2],[3,5,7],[8,1,6]]
 
-n = 7
+n = 3
 square = [[float('NaN') for i in range(0,n)] for j in range(0,n)]
 
 def printsquare(square):
@@ -26,6 +26,10 @@ def fill_central_squares(square):
     square[center_i -1][center_j] = n**2
     square[center_i][center_j +1] = n**2 + 1 - n
     square[center_i][center_j -1] = n
+
+def rule1(x, n, upright):
+    """First rule to fill magic square"""
+    return((x + (-1**upright * n))%n**2)
 
 def verifysquare(square):
     """Verify whether a given matrix is a magic square"""
@@ -54,5 +58,6 @@ def verifysquare(square):
     return(len(list(set(flattened))) == 1)
 
 if __name__ == '__main__':
-    fill_central_squares(square)
-    printsquare(square)
+    print(rule1(1,3,True))
+    #fill_central_squares(square)
+    #printsquare(square)
