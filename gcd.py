@@ -1,6 +1,6 @@
 
 
-x = 42
+x = 420
 y = 48
 
 def gcd(x, y):
@@ -10,10 +10,9 @@ def gcd(x, y):
 
     remainder = larger % smaller
 
-    if(remainder == 0):
+    if remainder == 0:
         return(smaller)
-
-    if(remainder != 0):
+    else:
         return(gcd(smaller, remainder))
 
 if __name__ == '__main__':

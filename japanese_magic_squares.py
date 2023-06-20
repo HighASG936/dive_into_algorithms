@@ -1,6 +1,7 @@
 import math
 import random
 import time
+import os
 
 
 def printsquare(square):
@@ -13,7 +14,6 @@ def printsquare(square):
     # Print labels of rows and values of square
     for label, row in zip(labels, square):
         print(format_row.format(label, *row))
-
 
 def rule1(x, n, upright):
     """First rule to fill magic square"""
@@ -32,54 +32,55 @@ def rule3(x, n, upleft):
 
 def fillsquare(square, entry_i, entry_j, howfull):
     """Fill whole magic square"""
-    new_entry_i = float('NaN')
-    new_entry_j = float('NaN')
+    new_entry_i = 1
+    new_entry_j = 1
 
     while sum(math.isnan(i) for row in square for i in row) > howfull:
         where_we_can_go = []
 
         if entry_i < (n - 1) and entry_j < (n - 1):
             where_we_can_go.append('down_right')
-        if entry_i < (n - 1) and entry_j > 0:
+        elif entry_i < (n - 1) and entry_j > 0:
             where_we_can_go.append('down_left')
-        if entry_i > 0 and entry_j < (n - 1):
+        elif entry_i > 0 and entry_j < (n - 1):
             where_we_can_go.append('up_right')
-        if entry_i > 0 and entry_j > 0:
+        elif entry_i > 0 and entry_j > 0:
             where_we_can_go.append('up_left')
 
         where_to_go = random.choice(where_we_can_go)
         if where_to_go == 'up_right':
-            new_entry_i = entry_i - 1
-            new_entry_j = entry_j + 1
+            new_entry_i -= 1
+            new_entry_j += 1
             square[new_entry_i][new_entry_j] = rule1(square[entry_i][entry_j], n, True)
 
-        if where_to_go == 'down_left':
-            new_entry_i = entry_i + 1
-            new_entry_j = entry_j - 1
+        elif where_to_go == 'down_left':
+            new_entry_i += 1
+            new_entry_j -= 1
             square[new_entry_i][new_entry_j] = rule1(square[entry_i][entry_j], n, False)
 
-        if where_to_go == 'up_left' and (entry_i + entry_j) != n:
-            new_entry_i = entry_i - 1
-            new_entry_j = entry_j - 1
+        elif where_to_go == 'up_left' and (entry_i + entry_j) != n:
+            new_entry_i -= 1
+            new_entry_j -= 1
             square[new_entry_i][new_entry_j] = rule2(square[entry_i][entry_j], n, True)
 
-        if where_to_go == 'down_right' and (entry_i + entry_j) != (n - 2):
-            new_entry_i = entry_i + 1
-            new_entry_j = entry_j + 1
+        elif where_to_go == 'down_right' and (entry_i + entry_j) != (n - 2):
+            new_entry_i += 1
+            new_entry_j += 1
             square[new_entry_i][new_entry_j] = rule2(square[entry_i][entry_j], n, False)
 
-        if where_to_go == 'up_left' and (entry_i + entry_j) == n:
-            new_entry_i = entry_i - 1
-            new_entry_j = entry_j - 1
+        elif where_to_go == 'up_left' and (entry_i + entry_j) == n:
+            new_entry_i -= 1
+            new_entry_j -= 1
             square[new_entry_i][new_entry_j] = rule3(square[entry_i][entry_j], n, True)
 
-        if where_to_go == 'down_right' and (entry_i + entry_j) == (n - 2):
-            new_entry_i = entry_i + 1
-            new_entry_j = entry_j + 1
+        elif where_to_go == 'down_right' and (entry_i + entry_j) == (n - 2):
+            new_entry_i += 1
+            new_entry_j += 1
             square[new_entry_i][new_entry_j] = rule3(square[entry_i][entry_j], n, False)
 
+        os.system('clear')
         printsquare(square)
-        print()
+        
         time.sleep(0.1)
         entry_i = new_entry_i
         entry_j = new_entry_j
@@ -115,7 +116,7 @@ def verifysquare(square):
 
 
 if __name__ == '__main__':
-    n = 9
+    n = 3
     square = [[float('NaN') for i in range(0, n)] for j in range(0, n)]
 
     center_i = math.floor(n / 2)
@@ -129,14 +130,13 @@ if __name__ == '__main__':
 
     entry_i = center_i
     entry_j = center_j
+    square = fillsquare(square, entry_i, entry_j, ((n ** 2) / 2) - 4)
 
-    square = fillsquare(square, entry_i, entry_j, (n ** 2) / 2 - 4)
     entry_i = math.floor(n / 2) + 1
     entry_j = math.floor(n / 2)
-    printsquare(square)
-    input()
     square = fillsquare(square, entry_i, entry_j, 0)
     square = [[n ** 2 if x == 0 else x for x in row] for row in square]
-    printsquare(square)
+    
+    
     print(verifysquare(square))
 

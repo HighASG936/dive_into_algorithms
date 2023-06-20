@@ -28,12 +28,12 @@ def search_minima(current_rate):
     while(keep_going):
         rate_change = step_size * revenue_derivative_flipped(current_rate)
         current_rate -= rate_change
-        if(abs(rate_change) < threshold):
+        if abs(rate_change) < threshold or iterations >= maximum_iterations:
             keep_going = False
-        if(iterations >= maximum_iterations):
-            keep = False
         iterations += 1
     return current_rate
+
+
 
 if __name__ == '__main__':
     xs = [x/1000 for x in range(1001)]

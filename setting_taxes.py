@@ -1,7 +1,7 @@
 import math
 import matplotlib.pyplot as plt
-
-
+import os
+import time
 
 def revenue(tax):
     """Taxes Formula"""
@@ -19,6 +19,7 @@ def search_maxima(current_rate):
     iterations = 0
     step_size = 0.001
 
+    os.system('clear')
     while(keep_going):
         rate_change = step_size * revenue_derivative(current_rate)
         current_rate = current_rate + rate_change
@@ -28,16 +29,18 @@ def search_maxima(current_rate):
 
         iterations += 1
 
-        print(rate_change)
+        print(f"Current Rate:\t{current_rate}\nRevenue:\t{revenue(current_rate)}")
+        time.sleep(0.1)
+        os.system('clear')        
 
-    print(current_rate, revenue(current_rate))
+    print(f"Current Rate:\t{current_rate}\nRevenue:\t{revenue(current_rate)}")
     return current_rate
 
 
 if __name__ == "__main__":
     xs = [x/1000 for x in range(1001)]
     ys = [revenue(x) for x in xs]
-    current_rate = 0.3
+    current_rate = 0.9
 
     current_rate = search_maxima(current_rate)
 
