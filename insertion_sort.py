@@ -2,6 +2,8 @@
 from timeit import default_timer as timer
 import random
 import matplotlib.pyplot as plt
+import math
+import numpy as np
 
 def insert_cabinet(cabinet, to_insert):
 	"""Insert an item on new cabinet"""
@@ -49,10 +51,12 @@ if __name__ == '__main__':
 	random.seed(5040)
 	xs = list(range(1,100))
 	ys = [check_steps(x) for x in xs]
-	#print(ys)
+	ys = [math.exp(x) for x in xs]
 
 	plt.plot(xs, ys)
-	plt.title('Steps Required for Insertion Sort for Random Cabinets')
+    axes = plt.gca()
+    axes.set_ylim(np.min(ys), np.max(ys) + 140)
+	plt.title('Comparing Insertion Sort to th Exponential Function')
 	plt.xlabel('Number of Files in Random Cabinet')
 	plt.ylabel('Steps Required to Sort Cabinet by Insertion Sort')
 	plt.show()
