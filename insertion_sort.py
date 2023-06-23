@@ -38,7 +38,7 @@ def check_steps(size_of_cabinet):
 	"""Check quantity of steps"""
 	global stepcounter
 
-	cabinet = [int(1000 * random.random()) for i in range(size_of_cabinet)]
+	cabinet = [int(100 * random.random()) for i in range(size_of_cabinet)]
 	stepcounte = 0
 	sortedcabinet = insertion_sort(cabinet)
 	return stepcounter
@@ -55,16 +55,19 @@ if __name__ == '__main__':
     ys_squared = [x**2 for x in xs]
     ys_threehalves = [x**1.5 for x in xs]
     ys_cubed = [x**3 for x in xs]
-    ys_more_acurrent = [ 18.7*((0.5*x**2)+(1.5*x))   for x in xs]
+    ys_more_acurrent = [((0.5*x**1.5)+(1.5*x))   for x in xs]
+    ys_merge = [ x*math.log2(x)  for x in xs]
+
 
     plt.plot(xs, ys)
     axes = plt.gca()
     axes.set_ylim(np.min(ys), np.max(ys) + 140)
-    plt.plot(xs, ys_exp)
-    plt.plot(xs, ys_squared)
-    plt.plot(xs, ys_threehalves)
-    plt.plot(xs, ys_cubed)
-    plt.plot(xs, ys_more_acurrent)
+    #plt.plot(xs, ys_exp)
+    #plt.plot(xs, ys_squared)
+    #plt.plot(xs, ys_threehalves)
+    #plt.plot(xs, ys_cubed)
+    #plt.plot(xs, ys_more_acurrent)
+    plt.plot(xs, ys_merge)
     plt.title('Comparing Insertion Sort to Other Growth Rates')
     plt.xlabel('Number of Files in Random Cabinet')
     plt.ylabel('Steps Required to Sort Cabinet by Insertion Sort')
