@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from gauss import bell as gb
+
+
+average = lambda d: sum(d) / len(d)
 
 
 def next_random(previous, n1, n2, n3):
@@ -8,12 +12,14 @@ def next_random(previous, n1, n2, n3):
 	the_next = (previous * n1 + n2) % n3
 	return the_next
 
+
 def list_random(n1, n2, n3):	
 	"""Generate a random number list"""
 	output = [1]
 	while len(output) <= n3:
 		output.append(next_random( output[-1], n1, n2, n3) )
 	return output
+
 
 def overlapping_sums(the_list, sum_length):
 	"""The Diehard test for randomness"""
@@ -25,22 +31,11 @@ def overlapping_sums(the_list, sum_length):
 		output.append(sum(the_list[n:(n + sum_length)]))
 	return output
 
-def average(data):
-	""" """
-	return sum(overlap) / len(overlap)
-
-def gauss_bell(xs, data):
-	""" """
-	mu = average(data)  # Media
-	sigma = mu/4  # Desviación estándar
-
-	y_gauss = [max(data)*28/(math.sqrt(2*math.pi*sigma)) * math.exp( -0.5 * ((x-mu)/sigma)**2 ) for x in xs ]
-	return y_gauss
 
 def plot_overlapping_sums(x, overlap):
 	""" """
 	fig, ax = plt.subplots()
-	y = gauss_bell(x, overlap)
+	y = gb(x, overlap).values()
 
 	xs_media = [average(overlap) for _ in range(0, 2)]
 	ys_media = [0, max(y)] 
