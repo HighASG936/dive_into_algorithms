@@ -38,10 +38,32 @@ def plot_triangule_simple(triangule, thename):
     pl.savefig(str(thename)+'.png')
     pl.close()
 
+def triangule_to_circumcenter(triangule):
+    """Find the circumcenter and circumradius"""
+    x, y, z = complex(triangule[0][0], triangule[0][1]), \
+              complex(triangule[1][0], triangule[1][1]), \
+              complex(triangule[2][0], triangule[2][1])      
+    #w = z - x
+    #w /=y - x
+    w = (z - x)/(y - x)    
+    
+    c =   (x-y) * (w-abs(w)**2)  /2j/w.imag - x
+    radius = abs(c+x)
+    return -c.real, -c.imag, radius
+    
+    
 if __name__ == '__main__':
     a = (0.2, 0.8)
     b = (0.5, 0.2)
     c = (0.8, 0.7)
+    x_center, y_center, radius = triangule_to_circumcenter(points_to_triangule(a, b, c))
+    print(f"center: x={x_center:.2f}, y={y_center:.2f}")
+    print(f"radius: {radius:.2f}")
     plot_triangule_simple(points_to_triangule(a, b, c), 'tri')
+
+
+    
+    
+    
     
     
