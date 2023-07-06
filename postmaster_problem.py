@@ -86,7 +86,7 @@ if __name__ == '__main__':
     print(f"radius: {radius:.2f}")
     plot_triangle_simple(points_to_triangle(a, b, c), 'tri')
 
-    #Plot a circumscribed triangles
+    #Plot circumscribed triangles
     a = (0.1, 0.1)
     b = (0.3, 0.6)
     c = (0.5, 0.2)
