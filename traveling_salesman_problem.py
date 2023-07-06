@@ -262,8 +262,7 @@ def init_func():
     
     #Genetare hipotetical cities
     x, y, cities = generate_cities(random_seed, N)        
-
-
+    
 if __name__ == "__main__":
 
     #Initialize all variables
@@ -312,5 +311,6 @@ if __name__ == "__main__":
     plotitinerary(cities, simanitinerary, 'Traveling Salesman Itinerary - Simulated Annealing', 'figure7')
     print(f"{nnresult:.2}")
     print(f"{simanresult/nnresult:.2}%")
+    
     
     
