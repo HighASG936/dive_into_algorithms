@@ -114,7 +114,8 @@ def insertspaces(text, word_list):
                                                              spacestarts,
                                                              spacestarts_affine)
     
-    return get_new_text(text, partial_words, partial_words_end, between_spaces_notvalid)
+    return get_new_text(text, partial_words, partial_words_end, 
+                        between_spaces_notvalid)
 
 
 if __name__ == '__main__':
