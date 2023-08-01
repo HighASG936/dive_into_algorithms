@@ -52,8 +52,10 @@ def get_higererrors(meanhigher, higheroutcomes):
     """ """
     return [abs(outcome - meanhigher) for outcome in higheroutcomes]
 
-def get_results(loweroutcomes, higheroutcomes, split_candidate, lowest_error):
-    """ """
+def get_results(loweroutcomes, higheroutcomes, split_candidate, lowest_error,   best_split,      \
+                                                                                best_lowermean,  \
+                                                                                best_highermean, ):
+    """ """    
     if np.min([len(loweroutcomes), len(higheroutcomes)]) > 0 :
         meanlower = np.mean(loweroutcomes)
         meanhigher = np.mean(higheroutcomes)
@@ -80,8 +82,11 @@ def get_splitpoint(allvalues, predictedvalues):
         best_split, lowest_error, best_lowermean, best_highermean = get_results(loweroutcomes,   \
                                                                                 higheroutcomes,  \
                                                                                 split_candidate, \
-                                                                                 lowest_error)
-        return best_split, lowest_error, best_lowermean, best_highermean 
+                                                                                lowest_error,    \
+                                                                                best_split,      \
+                                                                                best_lowermean,  \
+                                                                                best_highermean,  )
+    return best_split, lowest_error, best_lowermean, best_highermean 
 
 def getsplit(data, variables, outcome_variable):
     """ """
