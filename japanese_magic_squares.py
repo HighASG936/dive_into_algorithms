@@ -29,25 +29,33 @@ def rule3(x, n, upleft):
     """Third rule to fill magic square"""
     return (x + (-1**upleft * (-n + 1))) % n**2
 
+def get_we_can_go_list(entry_i, entry_j):
+    """ """
+    where_we_can_go = []
+
+    if entry_i < (n - 1) and entry_j < (n - 1):
+        where_we_can_go.append('down_right')
+    if entry_i < (n - 1) and entry_j > 0:
+        where_we_can_go.append('down_left')
+    if entry_i > 0 and entry_j < (n - 1):
+        where_we_can_go.append('up_right')
+    if entry_i > 0 and entry_j > 0:
+        where_we_can_go.append('up_left')
+    return where_we_can_go
+
+def get_where_to_go(entry_i, entry_j):
+    """ """
+    where_we_can_go = get_we_can_go_list(entry_i, entry_j)
+    return random.choice(where_we_can_go)
 
 def fillsquare(square, entry_i, entry_j, howfull):
-    """Fill whole magic square"""
+    """
+    Fill whole magic square
+    """
     while sum(math.isnan(i) for row in square for i in row) > howfull:
-        where_we_can_go = []
-
-        if entry_i < (n - 1) and entry_j < (n - 1):
-            where_we_can_go.append('down_right')
+        where_to_go = get_where_to_go(entry_i, entry_j)
         
-        if entry_i < (n - 1) and entry_j > 0:
-            where_we_can_go.append('down_left')
-        
-        if entry_i > 0 and entry_j < (n - 1):
-            where_we_can_go.append('up_right')
-        
-        if entry_i > 0 and entry_j > 0:
-            where_we_can_go.append('up_left')
-
-        where_to_go = random.choice(where_we_can_go)
+        #With rule 1
         if where_to_go == 'up_right':
             new_entry_i = entry_i - 1
             new_entry_j = entry_j + 1
@@ -58,22 +66,25 @@ def fillsquare(square, entry_i, entry_j, howfull):
             new_entry_j = entry_j - 1
             square[new_entry_i][new_entry_j] = rule1(square[entry_i][entry_j], n, False)
 
-        if where_to_go == 'up_left' and (entry_i + entry_j) != n:
+        #With rule 2
+        sum_entries = entry_i + entry_j
+        if where_to_go == 'up_left' and sum_entries != n:
             new_entry_i = entry_i - 1
             new_entry_j = entry_j - 1
             square[new_entry_i][new_entry_j] = rule2(square[entry_i][entry_j], n, True)
 
-        if where_to_go == 'down_right' and (entry_i + entry_j) != (n-2):
+        if where_to_go == 'down_right' and sum_entries != (n-2):
             new_entry_i = entry_i + 1
             new_entry_j = entry_j + 1
             square[new_entry_i][new_entry_j] = rule2(square[entry_i][entry_j], n, False)
 
-        if where_to_go == 'up_left' and (entry_i + entry_j) == n:
+        #With rule 3
+        if where_to_go == 'up_left' and sum_entries == n:
             new_entry_i = entry_i - 1
             new_entry_j = entry_j - 1
             square[new_entry_i][new_entry_j] = rule3(square[entry_i][entry_j], n, True)
 
-        if where_to_go == 'down_right' and (entry_i + entry_j) == (n-2):
+        if where_to_go == 'down_right' and sum_entries == (n-2):
             new_entry_i = entry_i + 1
             new_entry_j = entry_j + 1
             square[new_entry_i][new_entry_j] = rule3(square[entry_i][entry_j], n, False)
@@ -83,8 +94,8 @@ def fillsquare(square, entry_i, entry_j, howfull):
 
         os.system('clear')
         printsquare(square)
-        time.sleep(0.3)
-        
+        time.sleep(0.1)        
+    
     return square
 
 
@@ -114,11 +125,8 @@ def verifysquare(square):
     # Verify whether flattened have just only one value
     return len(list(set(flattened))) == 1
 
-
-if __name__ == '__main__':
-    n = 3
-    square = [[float('NaN') for i in range(0, n)] for j in range(0, n)]
-
+def start_with_central(n, square):
+    """ """
     center_i = math.floor(n/2)
     center_j = math.floor(n/2)
 
@@ -127,16 +135,23 @@ if __name__ == '__main__':
     square[center_i - 1][center_j] = n**2
     square[center_i][center_j + 1] = n**2 + 1 - n
     square[center_i][center_j - 1] = n
-
+    
     entry_i = center_i
     entry_j = center_j
     square = fillsquare(square, entry_i, entry_j, (n**2)/2 - 4)
 
+
+def rest_of_square(n, square):
+    """ """
     entry_i = math.floor(n/2) + 1
     entry_j = math.floor(n/2)
     square = fillsquare(square, entry_i, entry_j, 0)
     square = [[n**2 if x == 0 else x for x in row] for row in square]
-    
-    
+
+if __name__ == '__main__':
+    n = 6
+    square = [[float('NaN') for i in range(0, n)] for j in range(0, n)]
+    start_with_central(n, square)
+    rest_of_square(n, square)
     print(verifysquare(square))
 

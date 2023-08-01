@@ -40,7 +40,7 @@ def get_loweroutcomes(allvalues, predictedvalues, split_candidate):
                      if value <= split_candidate] 
 
 def get_higheroutcomes(allvalues, predictedvalues, split_candidate):
-    """ """
+    """ """   
     return [outcome for value, outcome in zip(allvalues, predictedvalues) \
                      if value > split_candidate] 
 
@@ -83,6 +83,32 @@ def get_splitpoint(allvalues, predictedvalues):
                                                                                  lowest_error)
         return best_split, lowest_error, best_lowermean, best_highermean 
 
+def getsplit(data, variables, outcome_variable):
+    """ """
+    best_var = ''
+    lowest_error = float('inf')
+    best_split = None
+    predictedvalues = list(data.loc[:, outcome_variable])
+    best_lowermean = -1
+    best_highermean = -1 
+
+    for var in variables:
+        allvalues = list(data.loc[:, var])
+        splitted = get_splitpoint(allvalues, predictedvalues)
+
+        if splitted[1] < lowest_error:
+            best_split = splitted[0]
+            lowest_error = splitted[1]
+            best_var = var
+            best_lowermean = splitted[2]
+            best_highermean = splitted[3]
+    
+    generated_tree = [
+                        [best_var, float('-inf'), best_split, best_lowermean], \
+                        [best_var, best_split, float('inf'), best_highermean]
+                     ]
+    return generated_tree
+
 if __name__ == '__main__':
     
     #Downloading our dataset
@@ -102,4 +128,9 @@ if __name__ == '__main__':
     allvalues = list(ess.loc[:, 'hhmmb'])
     predictedvalues = list(ess.loc[:, 'happy'])
     print(get_splitpoint(allvalues, predictedvalues))#best_split-lowest_error-best_lowermean-best_highermean
+
+    #Choosing Splitting Variables
+    variables = ['rlgdgr', 'hhmmb', 'netusoft', 'agea', 'eduyrs']
+    outcome_variable = 'happy'
+    print(getsplit(ess, variables, outcome_variable))
 
