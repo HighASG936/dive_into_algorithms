@@ -88,7 +88,28 @@ def get_splitpoint(allvalues, predictedvalues):
                                                                                 best_highermean,  )
     return best_split, lowest_error, best_lowermean, best_highermean 
 
-def getsplit(data, variables, outcome_variable):
+def adding_depth(depth, data, best_var, best_split, generated_tree, best_lowermean, best_highermean):
+    """
+    
+    """    
+    if depth < maxdepth:
+        splitdata1 = data.loc[data[best_var] <= best_split,:]
+        splitdata2 = data.loc[data[best_var] > best_split,:]
+
+        if len(splitdata1.index) > 10 and len(splitdata2.index) > 10:
+            generated_tree[0][3] = getsplit(depth + 1, splitdata1, variables, outcome_variable)   
+            generated_tree[1][3] = getsplit(depth + 1, splitdata2, variables, outcome_variable)
+        else:
+            depth = maxdepth + 1
+            generated_tree[0][3] = best_lowermean
+            generated_tree[1][3] = best_highermean       
+    else:
+        generated_tree[0][3] = best_lowermean
+        generated_tree[1][3] = best_highermean       
+    
+    return generated_tree 
+
+def getsplit(depth, data, variables, outcome_variable):
     """ """
     best_var = ''
     lowest_error = float('inf')
@@ -109,9 +130,11 @@ def getsplit(data, variables, outcome_variable):
             best_highermean = splitted[3]
     
     generated_tree = [
-                        [best_var, float('-inf'), best_split, best_lowermean], \
-                        [best_var, best_split, float('inf'), best_highermean]
+                        [best_var, float('-inf'), best_split,[]], \
+                        [best_var, best_split, float('inf'), []]
                      ]
+    
+    adding_depth(depth, data, best_var, best_split, generated_tree, best_lowermean, best_highermean)
     return generated_tree
 
 if __name__ == '__main__':
@@ -125,6 +148,9 @@ if __name__ == '__main__':
     print(ess.loc[:,'sclmeet'].head())
     ess = get_restricted_dataset(ess)
 
+    #Max Depth
+    maxdepth = 3
+
     #Splitting our data
     meanlower, meanhigher = splitting_our_data(ess)
     print(f"{meanlower:.2}, {meanhigher:.2}")
@@ -135,7 +161,7 @@ if __name__ == '__main__':
     print(get_splitpoint(allvalues, predictedvalues))#best_split-lowest_error-best_lowermean-best_highermean
 
     #Choosing Splitting Variables
-    variables = ['rlgdgr', 'hhmmb', 'netusoft', 'agea', 'eduyrs']
+    variables = ['sclmeet', 'rlgdgr', 'hhmmb', 'netusoft', 'agea', 'eduyrs', 'health']
     outcome_variable = 'happy'
-    print(getsplit(ess, variables, outcome_variable))
+    print(getsplit(0, ess, variables, outcome_variable))
 
