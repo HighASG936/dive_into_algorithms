@@ -206,6 +206,21 @@ if __name__ == '__main__':
     ess.loc[:, 'predicted'] = predictions
     errors = abs(ess.loc[:, 'predicted'] - ess.loc[:, 'happy'])
 
-    print(f"{np.mean(errors):.3}")
+    print(f"{np.mean(errors):.4}")
 
+    #the problem of overfitting
+    predictions = []
+    np.random.seed(518)
+    ess_shuffled = ess.reindex(np.random.permutation(ess.index)).reset_index(drop=True)
+    training_data = ess_shuffled.loc[0:3700, :]
+    test_data = ess_shuffled.loc[3701:, :].reset_index(drop=True)
+    thetree = getsplit(0, training_data, variables, outcome_variable)
+
+    for k in range(0, len(test_data.index)):
+        observation = test_data.loc[k, :]
+        predictions.append(get_prediction(observation, thetree))
     
+    test_data.loc[:, 'predicted'] = predictions
+    erros = abs(test_data.loc[:, 'predicted'] - test_data.loc[:,'happy'])
+    print(f"{np.mean(errors):.4}")
+
