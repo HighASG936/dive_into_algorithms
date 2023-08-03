@@ -137,6 +137,28 @@ def getsplit(depth, data, variables, outcome_variable):
     adding_depth(depth, data, best_var, best_split, generated_tree, best_lowermean, best_highermean)
     return generated_tree
 
+def get_prediction(observation, tree):
+    j = 0
+    keepgoing = True
+    prediction = -1
+
+    while keepgoing:
+        j += 1
+        variable_tocheck = tree[0][0]
+        bound1 = tree[0][1]
+        bound2 = tree[0][2]
+        bound3 = tree[1][2]
+
+        if observation.loc[variable_tocheck] < bound2:
+            tree = tree[0][3]
+        else:
+            tree = tree[1][3]
+        if isinstance(tree, float):
+            keepgoing = False
+            prediction = tree
+    return prediction
+    
+
 if __name__ == '__main__':
     
     #Downloading our dataset
@@ -149,7 +171,7 @@ if __name__ == '__main__':
     ess = get_restricted_dataset(ess)
 
     #Max Depth
-    maxdepth = 3
+    maxdepth = 4
 
     #Splitting our data
     meanlower, meanhigher = splitting_our_data(ess)
@@ -165,3 +187,25 @@ if __name__ == '__main__':
     outcome_variable = 'happy'
     print(getsplit(0, ess, variables, outcome_variable))
 
+    #Evaluation our decision tree
+    predictions = []
+    thetree = getsplit(0, ess, variables, outcome_variable)
+
+    for k in range(0, 30):
+        observation = ess.loc[k, :]
+        predictions.append(get_prediction(observation, thetree))
+    
+    print(predictions)
+
+    predictions = []
+
+    for k in range(0, len(ess.index)):
+        observation = ess.loc[k, :]
+        predictions.append(get_prediction(observation, thetree))
+
+    ess.loc[:, 'predicted'] = predictions
+    errors = abs(ess.loc[:, 'predicted'] - ess.loc[:, 'happy'])
+
+    print(f"{np.mean(errors):.3}")
+
+    
