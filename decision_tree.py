@@ -34,13 +34,15 @@ def splitting_our_data(ess):
     meanhigher = np.mean(get_high_social_happiness(social, happy))
     return float(meanlower), float(meanhigher)
 
-def get_loweroutcomes(allvalues, predictedvalues, split_candidate):
+def get_loweroutcomes(predictedvalues, split_candidate):
     """Return a list """
+    global allvalues
     return [outcome for value, outcome in zip(allvalues, predictedvalues) \
                      if value <= split_candidate] 
 
-def get_higheroutcomes(allvalues, predictedvalues, split_candidate):
-    """ """   
+def get_higheroutcomes(predictedvalues, split_candidate):
+    """ """
+    global allvalues   
     return [outcome for value, outcome in zip(allvalues, predictedvalues) \
                      if value > split_candidate] 
 
@@ -52,10 +54,18 @@ def get_higererrors(meanhigher, higheroutcomes):
     """ """
     return [abs(outcome - meanhigher) for outcome in higheroutcomes]
 
-def get_results(loweroutcomes, higheroutcomes, split_candidate, lowest_error,   best_split,      \
-                                                                                best_lowermean,  \
-                                                                                best_highermean, ):
-    """ """    
+def get_results():
+    """
+    
+    """    
+    global loweroutcomes
+    global higheroutcomes
+    global split_candidate
+    global lowest_error
+    global best_split
+    global best_lowermean
+    global best_highermean
+    
     if np.min([len(loweroutcomes), len(higheroutcomes)]) > 0 :
         meanlower = np.mean(loweroutcomes)
         meanhigher = np.mean(higheroutcomes)
@@ -69,29 +79,40 @@ def get_results(loweroutcomes, higheroutcomes, split_candidate, lowest_error,   
             best_highermean = meanhigher
     return best_split, lowest_error, best_lowermean, best_highermean
 
-def get_splitpoint(allvalues, predictedvalues):
+def get_splitpoint(predictedvalues):
     """ """
+    global loweroutcomes
+    global higheroutcomes
+    global split_candidate
+    global lowest_error
+    global best_split
+    global best_lowermean
+    global best_highermean
+    global allvalues 
+    
     lowest_error = float('inf')
     best_split = None
     best_lowermean = np.mean(predictedvalues)
     best_highermean = np.mean(predictedvalues)
+    results = [best_split, lowest_error, best_lowermean, best_highermean]
+
     for pctl in range(0, 100):
         split_candidate = np.percentile(allvalues, pctl)
-        loweroutcomes = get_loweroutcomes(allvalues, predictedvalues, split_candidate)
-        higheroutcomes = get_higheroutcomes(allvalues, predictedvalues, split_candidate)
-        best_split, lowest_error, best_lowermean, best_highermean = get_results(loweroutcomes,   \
-                                                                                higheroutcomes,  \
-                                                                                split_candidate, \
-                                                                                lowest_error,    \
-                                                                                best_split,      \
-                                                                                best_lowermean,  \
-                                                                                best_highermean,  )
-    return best_split, lowest_error, best_lowermean, best_highermean 
+        loweroutcomes = get_loweroutcomes(predictedvalues, split_candidate)
+        higheroutcomes = get_higheroutcomes(predictedvalues, split_candidate)
+        results = get_results()
+    return results 
 
-def adding_depth(depth, data, best_var, best_split, generated_tree, best_lowermean, best_highermean):
+def adding_depth(depth, data):
     """
     
-    """    
+    """  
+    global best_var
+    global best_split
+    global generated_tree
+    global best_lowermean
+    global best_highermean
+
     if depth < maxdepth:
         splitdata1 = data.loc[data[best_var] <= best_split,:]
         splitdata2 = data.loc[data[best_var] > best_split,:]
@@ -111,6 +132,13 @@ def adding_depth(depth, data, best_var, best_split, generated_tree, best_lowerme
 
 def getsplit(depth, data, variables, outcome_variable):
     """ """
+    global best_var
+    global best_split
+    global generated_tree
+    global best_lowermean
+    global best_highermean
+    global allvalues
+
     best_var = ''
     lowest_error = float('inf')
     best_split = None
@@ -120,7 +148,7 @@ def getsplit(depth, data, variables, outcome_variable):
 
     for var in variables:
         allvalues = list(data.loc[:, var])
-        splitted = get_splitpoint(allvalues, predictedvalues)
+        splitted = get_splitpoint(predictedvalues)
 
         if splitted[1] < lowest_error:
             best_split = splitted[0]
@@ -130,11 +158,12 @@ def getsplit(depth, data, variables, outcome_variable):
             best_highermean = splitted[3]
     
     generated_tree = [
-                        [best_var, float('-inf'), best_split,[]], \
+                        [best_var, float('-inf'), best_split,[]],
                         [best_var, best_split, float('inf'), []]
                      ]
     
-    adding_depth(depth, data, best_var, best_split, generated_tree, best_lowermean, best_highermean)
+    generated_tree = adding_depth(depth, data)
+    
     return generated_tree
 
 def get_prediction(observation, tree):
@@ -161,6 +190,8 @@ def get_prediction(observation, tree):
 
 if __name__ == '__main__':
     
+    global allvalues
+
     #Downloading our dataset
     ess = pd.read_csv('ess.csv', low_memory=False)    
     
@@ -180,7 +211,7 @@ if __name__ == '__main__':
     #Smarter Splitting
     allvalues = list(ess.loc[:, 'hhmmb'])
     predictedvalues = list(ess.loc[:, 'happy'])
-    print(get_splitpoint(allvalues, predictedvalues))#best_split-lowest_error-best_lowermean-best_highermean
+    print(get_splitpoint(predictedvalues))#best_split-lowest_error-best_lowermean-best_highermean
 
     #Choosing Splitting Variables
     variables = ['sclmeet', 'rlgdgr', 'hhmmb', 'netusoft', 'agea', 'eduyrs', 'health']
