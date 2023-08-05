@@ -167,6 +167,23 @@ def get_all_posible_movements(game):
     allposible = remove_actions_taken(game, allposible)
     return allposible
 
+def generate_tree(posible_moves, depth, maxdepth, game_so_far):
+    tree = []
+    for move in posible_moves:
+        move_profile = [move]
+        game2 = game_so_far.copy()
+        game2.append(move)
+        move_profile.append(score(game2))
+    
+        if depth < maxdepth:
+            posible_moves2 = posible_moves.copy()
+            posible_moves2.remove(move)
+            move_profile.append(generate_tree(posible_moves2, depth+1, maxdepth, game2))
+        else:
+            move_profile.append([])
+        tree.append(move_profile)
+    return tree
+
 if __name__ == '__main__':
     n = 5
     game = [ 
@@ -189,9 +206,15 @@ if __name__ == '__main__':
     #Scoring Games
     print(f"{score(game)}\n")
 
-    #Build out tree
+    #Building our tree
     allposible = get_all_posible_movements(game)
     print(*allposible, sep='\n')
     print(f"{len(allposible)}\n")
 
-    
+    allposible = [ 
+                    [(4,4),(4,3)],
+                    [(4,1),(5,1)],
+                 ]
+    thetree = generate_tree(allposible,0,1,[])
+    print(thetree)
+
