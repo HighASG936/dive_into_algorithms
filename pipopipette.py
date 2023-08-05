@@ -74,10 +74,10 @@ def logical_and(x, y):
     return x and y
 
 def is_a_square(game):
-    global start_line1 
-    global end_line1    
-    global start_line2
-    global end_line2    
+    """
+    
+    """
+    global start_line1, end_line1, start_line2, end_line2
     
     parallel = is_parallel(game)
     left = is_left(game)
@@ -102,9 +102,8 @@ def squarefinder(game):
         start_line2 = line[1][0]
         end_line2 = line[1][1]
 
-        if end_line1 == end_line2:
-            if is_a_square(game): 
-                countofsquares += 1
+        if end_line1 == end_line2 and is_a_square(game): 
+            countofsquares += 1
 
         return countofsquares
 
@@ -127,17 +126,58 @@ def score(game):
         squares = newsquares
     return score
 
+
+def get_vertical_movements(gamesize):
+    """
+    
+    """
+    vertical_movements = []
+    
+    for i in range(1, gamesize +1):
+        for j in range(2, gamesize +1):
+            vertical_movements.append([(i,j), (i,j-1)])
+    return vertical_movements
+
+def get_horizontal_movements(gamesize):
+    """
+    
+    """
+    horizontal_movements = []
+    
+    for i in range(1, gamesize):
+        for j in range(1, gamesize +1):
+            horizontal_movements.append([(i,j), (i+1,j)])
+    return horizontal_movements
+
+def remove_actions_taken(game, allposible):
+    """
+    
+    """       
+    no_taken_moves = [move for move in allposible if move not in game]
+    return no_taken_moves
+
+def get_all_posible_movements(game):
+    """
+    
+    """
+    global n
+
+    allposible = get_vertical_movements(n)
+    allposible.extend(get_horizontal_movements(n))
+    allposible = remove_actions_taken(game, allposible)
+    return allposible
+
 if __name__ == '__main__':
     n = 5
     game = [ 
-                [(1,2), (1,1)],
-                [(3,3), (4,3)],
-                [(1,5), (2,5)],
-                [(1,2), (2,2)],
-                [(2,2), (2,1)],
-                [(1,1), (2,1)],
-                [(3,4), (3,3)],
-                [(3,4), (4,4)],
+                [(1,2), (1,1)], 
+                [(3,3), (4,3)], 
+                [(1,5), (2,5)], 
+                [(1,2), (2,2)], 
+                [(2,2), (2,1)], 
+                [(1,1), (2,1)], 
+                [(3,4), (3,3)], 
+                [(3,4), (4,4)], 
            ]
     
     #Drawing the board
@@ -147,7 +187,11 @@ if __name__ == '__main__':
     drawgame('gameinprogress.png', game)
 
     #Scoring Games
-    print(score(game))
-    
+    print(f"{score(game)}\n")
+
+    #Build out tree
+    allposible = get_all_posible_movements(game)
+    print(*allposible, sep='\n')
+    print(f"{len(allposible)}\n")
 
     
