@@ -18,6 +18,9 @@ def remove_punctuation_lowercase_query(query):
     return query_lowercase.translate(remove_punctuation_map())
 
 def get_word_tokenize(translated_query):
+    """
+    
+    """
     try:
         return nltk.word_tokenize(translated_query)
     except LookupError:
@@ -38,19 +41,19 @@ def stem_tokens(tokens):
     stemmer = nltk.stem.porter.PorterStemmer()
     return [stemmer.stem(item) for item in tokens]
 
-def normalize(text):
+def normalize(query):
     """
     
     """
-    return stem_tokens(tokenize(text))
+    return stem_tokens(tokenize(query))
 
-def text_vectorization(query, all_documents):
+def text_vectorization(query, alldocuments):
     """
     
     """
-    vctrz = TfidfVectorizer(ngram_range=(1,1), tokenizer=normalize(query), stop_words='english')
-    vctrz.fit(all_documents)
-    tfidf_reports = vctrz.transform(all_documents).todense()
+    vctrz = TfidfVectorizer(ngram_range=(1,1), tokenizer=normalize, stop_words='english')
+    vctrz.fit(alldocuments)
+    tfidf_reports = vctrz.transform(alldocuments).todense()
     tfidf_question = vctrz.transform([query]).todense()
     
     return tfidf_reports, tfidf_question
@@ -58,19 +61,20 @@ def text_vectorization(query, all_documents):
 def vector_similarity(tfidf_reports, tfidf_question):
     """
     
-    """    
-    return [1 - spatial.distance.cosine(tfidf_reports[x], tfidf_question) for x in range(len(tfidf_reports))]
+    """
+    row_similarities = [1 - spatial.distance.cosine(tfidf_reports[x], tfidf_question) \
+                        for x in range(len(tfidf_reports))
+                       ]
+    return row_similarities
 
-def chatbot(query, allreports):
+def chatbot(query, alldocuments):
     """    
     
     """
-    tfidf_reports, tfidf_question = text_vectorization(query, allreports)
+    tfidf_reports, tfidf_question = text_vectorization(query, alldocuments)
     row_similatiries = vector_similarity(tfidf_reports, tfidf_question)
     
-    return allreports[np.argmax(row_similatiries)]
-    
-    
+    return alldocuments[np.argmax(row_similatiries)]
 
 if __name__ == '__main__':
     query = 'I want to learn about geometry algorithms.'
@@ -85,6 +89,7 @@ if __name__ == '__main__':
                     'Chapter 8. Language, including how to insert spaces and predict phrase completions.',
                     'Chapter 9. Machine learning, focused on decision trees and how to predict happiness and heart attacks.',
                     'Chapter 10. Artificial intelligence, and using the minimax algorithm to win at dots and boxes.',
-                    'Chapter 11. Where to go and what to study next, and how to build a chatbot.'
+                    'Chapter 11. Where to go and what to study next, and how to build a chatbot.',
                     ]
+
     print(chatbot(query, alldocuments))
