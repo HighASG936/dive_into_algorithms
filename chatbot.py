@@ -3,6 +3,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy import spatial
 import numpy as np
 import nltk, string
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning, message='')
 
 def remove_punctuation_map():
     """
@@ -62,9 +65,8 @@ def vector_similarity(tfidf_reports, tfidf_question):
     """
     
     """
-    row_similarities = [1 - spatial.distance.cosine(tfidf_reports[x], tfidf_question) \
-                        for x in range(len(tfidf_reports))
-                       ]
+    row_similarities = [1 - spatial.distance.cosine(np.ravel(tfidf_reports[x]), np.ravel(tfidf_question)) \
+                        for x in range(len(tfidf_reports))]
     return row_similarities
 
 def chatbot(query, alldocuments):
@@ -72,12 +74,13 @@ def chatbot(query, alldocuments):
     
     """
     tfidf_reports, tfidf_question = text_vectorization(query, alldocuments)
+    
     row_similatiries = vector_similarity(tfidf_reports, tfidf_question)
     
     return alldocuments[np.argmax(row_similatiries)]
 
 if __name__ == '__main__':
-    query = 'I want to learn about geometry algorithms.'
+    query = 'I want to learn about magic squares.'
     alldocuments = [
                     'Chapter 1. The algorithmic approach to problem solving, including Galileo and baseball.', 
                     'Chapter 2. Algorithms in history, including magic squares, Russian peasant multiplication, and Egyptian methods.', 
